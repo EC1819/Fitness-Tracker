@@ -4,9 +4,12 @@
 - What does the app do, in 2–3 sentences?
 
 This app will allow users to track the exercises that they have done and have them neatly organized separated by day.
-User would be able to input their bio information such as height, weight, gender, and calculate how strong they are
-based on their demographic percentiles and muscle group & global aggregation. The application would show a trend chart showing users overtime how their strength has increased
-over time and using a formula to calculate their personal records.
+User would be able to input their bio information such as height, weight, gender. Users would be able to calculate their
+Body Fat % and FFMI.
+
+Long term goal:
+- calculate how strong users are based on their demographic percentiles and muscle group & global aggregation.
+- The application would show a trend chart showing users overtime how their strength has increased over time and using a formula to calculate their personal records.
 - Who is it for? (Just you? Anyone who lifts?)
 
 This application is for anyone that wants to track their progress and see how they progress over time. This would be
@@ -39,19 +42,42 @@ For each table: its name, its columns, and what each column stores.
 
 For the tables that would store the data of the workouts and the exercises that were completed these would be stored in
 2 separate tables
-The first table would store the workout session, with the first column holding the id and the second column would store
-the date.
+Workouts Table: 
+- The first table would store the workout session, with the first column holding the id
+- Second column would store the date of the session.
+
+Exercise-Sets Table:
 The second table would store the exercises sets where each row would be a single set
-The first column would be the id, second column the workout_id, third column being the exercises name, fourth column
-being the set number, fifth column holding the number of reps, and the last column be the weight used.
+- The first column would be the id
+- Second column the workout_id
+- Third column being the exercises name
+- Fourth column being the set number
+- Fifth column holding the number of reps
+- Sixth column be the weight_lbs used
 
 For the tables that would store the data of the user these would be split into 2 further tables
-The first table would store the body measure where each row is time you measured
-The first column would be an id, the second column a date, the third column height, fourth column sex, fifth column neck
-sixth column waist, and the seventh column being hip, eighth column body weight.
 
-The second table would be the profile where the first column would be the name of the user, and the second column would
-be age.
+Body Measurements table :
+- First column would be an id
+- Second column a date
+- Third column being body weight_lbs
+- Fourth column neck_in
+- Fifth column waist_in
+- Sixth column being hip_in
+
+Profile table : 
+The second table would be the profile
+- First would include an id
+- Second column would be height_in
+- Third column would be sex(male/female).
+
+The values that would be calculated Body fat % and FFMI from the stored measurements, but these values would not be
+stored.
+
+BMI is used internally but not shown to the user since it's a misleading metric depending if you have a lot of muscle on
+the body. Showing this number would only harm the user as it may lead to user being discouraged from working out since
+they would believe they're wasting their efforts. Or it may hte user to work out excessively which would put the user's
+body in more harm than benefiting from it.
 
 ## 5. API endpoints
 For each feature: the HTTP method, the URL, what goes in the
@@ -61,18 +87,26 @@ Example: POST /api/measurements → saves a measurement, returns it with status 
 For each feature depending on if the user is inputting data the method should be POST, the request body would hold the
 information the user put in. And it would save the information it input and return with a status code of 201
 
-POST /api/workouts → body: data, sets → returns the saved workout, 201
-GET /api/workouts → return all workouts, 200
-DELETE /api/workouts{id} → deletes one workout, 204 (or 404 if not found)
-GET /api/
+POST /api/workouts → body: date, sets → returns the saved workout, return with status 201
+GET /api/workouts → return all workouts, return with status 200
+DELETE /api/workouts/{id} → deletes one workout, return with status 204 (or 404 if not found)
+GET /api/workouts/{id} → view one workout, return with status 200 or return 404 if not found
+POST /api/measurements → body: measurement, returns with status 201
+GET /api/measurements →  return all measurements, return with status 200
+GET /api/metrics 
+GET /api/profile → return profile details, return with status code 200
+PUT /api/profile → body: date, height_in, sex(male/female), return with status code 200
+
 
 If the user is requesting information that is stored in the database the method would be GET.
 
 ## 6. Architecture diagram
 A boxes-and-arrows drawing: React → Spring Boot → PostgreSQL.
 (A photo of a hand drawing is fine.)
-
-Browser: React --HTTP + JSON → Spring Boot --SQL → PostgreSQL
+```
+[ Browser: React ]  --HTTP request + JSON→  [ Spring Boot ]  --SQL→  [ PostgreSQL ]
+                    ←HTTP response + JSON--                  ←rows--
+```
 
 
 ## 7. Open questions
