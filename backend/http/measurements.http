@@ -1,0 +1,38 @@
+### Get the measurements before one exists
+GET http://localhost:8080/api/measurements
+
+### Save measurements
+POST http://localhost:8080/api/measurements
+Content-Type: application/json
+
+{
+  "measurementDate": "2026-10-31",
+  "bodyWeightLbs": 168,
+  "neckIn": 13,
+  "waistIn": 30
+}
+
+### Adding in new measurements
+POST http://localhost:8080/api/measurements
+Content-Type: application/json
+
+{
+  "measurementDate": "2026-11-01",
+  "bodyWeightLbs": 160,
+  "neckIn": 13,
+  "waistIn": 30
+}
+
+### Listing all measurements
+GET http://localhost:8080/api/measurements
+
+### 5. Invalid values
+POST http://localhost:8080/api/measurements
+Content-Type: application/json
+
+{
+  "measurementDate": "2026-11-10",
+  "bodyWeightLbs": -100,
+  "neckIn": -3,
+  "waistIn": -30
+}
