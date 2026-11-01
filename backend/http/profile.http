@@ -1,0 +1,23 @@
+### Getting the profile before one even exists
+GET http://localhost:8080/api/profile
+
+### Save a profile
+PUT http://localhost:8080/api/profile
+Content-Type: application/json
+
+{ "heightIn" : 70, "sex": "MALE"}
+
+### Reading the profile back
+GET http://localhost:8080/api/profile
+
+### Updating profile
+PUT http://localhost:8080/api/profile
+Content-Type: application/json
+
+{ "heightIn" : 71, "sex": "MALE"}
+
+### Testing Invalid height
+PUT http://localhost:8080/api/profile
+Content-Type: application/json
+
+{ "heightIn" : -10, "sex": "MALE"}
