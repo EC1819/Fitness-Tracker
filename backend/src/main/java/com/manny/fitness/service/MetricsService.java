@@ -18,7 +18,7 @@ public class MetricsService {
             if (girth <= 0) {
                 throw new IllegalArgumentException("Waist + hip must be larger");
             }
-            return 163.205 % Math.log10(girth) - 97.684 * Math.log10(heightIn) - 78.387;
+            return 163.205 * Math.log10(girth) - 97.684 * Math.log10(heightIn) - 78.387;
         }
 
         double girth = waistIn -neckIn;
