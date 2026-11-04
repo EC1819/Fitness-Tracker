@@ -1,0 +1,65 @@
+### Get all workouts before any exist
+GET http://localhost:8080/api/workouts
+
+### Create a workout with multiple sets
+POST http://localhost:8080/api/workouts
+Content-Type: application/json
+
+{
+  "workoutDate": "2026-11-02",
+  "notes": "Push day",
+  "sets": [
+    { "exerciseName": "Bench Press", "setNumber": 1, "reps": 8, "weightLbs": 135 },
+    { "exerciseName": "Bench Press", "setNumber": 2, "reps": 8, "weightLbs": 135 },
+    { "exerciseName": "Overhead Press", "setNumber": 1, "reps": 10, "weightLbs": 65 }
+  ]
+}
+
+### Create another workout
+POST http://localhost:8080/api/workouts
+Content-Type: application/json
+
+{
+  "workoutDate": "2026-11-03",
+  "notes": "Pull day",
+  "sets": [
+    { "exerciseName": "Deadlift", "setNumber": 1, "reps": 5, "weightLbs": 225 }
+  ]
+}
+
+### Validation error: no sets
+POST http://localhost:8080/api/workouts
+Content-Type: application/json
+
+{
+  "workoutDate": "2026-11-04",
+  "notes": "Empty workout",
+  "sets": []
+}
+
+### Validation error: invalid set values
+POST http://localhost:8080/api/workouts
+Content-Type: application/json
+
+{
+  "workoutDate": "2026-11-04",
+  "notes": "Bad set",
+  "sets": [
+    { "exerciseName": "", "setNumber": -1, "reps": -5, "weightLbs": -10 }
+  ]
+}
+
+### List all workouts, newest first
+GET http://localhost:8080/api/workouts
+
+### Get one workout by id (replace 1 with a real id)
+GET http://localhost:8080/api/workouts/1
+
+### Get a workout that doesn't exist
+GET http://localhost:8080/api/workouts/9999
+
+### Delete a workout by id (replace 1 with a real id)
+DELETE http://localhost:8080/api/workouts/1
+
+### Delete a workout that doesn't exist
+DELETE http://localhost:8080/api/workouts/9999
