@@ -1,7 +1,7 @@
 import { useEffect, useState} from "react";
-import {API_URL} from "./api";
+import {API_URL} from "../api";
 
-export default function ProfilePage() {
+export default function ProfileScreen() {
     const [heightIn, setHeightIn] = useState("");
     const [sex, setSex] = useState("MALE");
     const [message, setMessage] = useState("");
