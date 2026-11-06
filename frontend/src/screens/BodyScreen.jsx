@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { API_URL } from "../api";
 import MetricsCard from "../components/MetricsCard.jsx";
 import MeasurementList from "../components/MeasurementList.jsx";
+import Modal from "../components/Modal.jsx";
+import MeasurementForm from "../components/MeasurementForm.jsx";
 
 export default function BodyScreen() {
     const [measurements, setMeasurements] = useState([]);
@@ -12,7 +14,10 @@ export default function BodyScreen() {
     const [metricsStatus, setMetricsStatus] = useState("loading");
     const [metricsErrorMsg, setMetricsErrorMsg] = useState("");
 
-    useEffect(() => {
+    const [isAddOpen, setIsAddOpen] = useState(false);
+
+    function loadMeasurements() {
+        setMeasurementsStatus("loading");
         fetch(`${API_URL}/api/measurements`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -26,9 +31,10 @@ export default function BodyScreen() {
                 setMeasurementsErrorMsg(err.message);
                 setMeasurementsStatus("error");
             });
-    }, []);
+    }
 
-    useEffect(() => {
+    function loadMetrics() {
+        setMetricsStatus("loading");
         fetch(`${API_URL}/api/metrics`)
             .then((res) => {
                 if (res.status === 404) return null;
@@ -47,7 +53,18 @@ export default function BodyScreen() {
                 setMetricsErrorMsg(err.message);
                 setMetricsStatus("error");
             });
+    }
+
+    useEffect(() => {
+        loadMeasurements();
+        loadMetrics();
     }, []);
+
+    function handleSaved() {
+        setIsAddOpen(false);
+        loadMeasurements();
+        loadMetrics();
+    }
 
     return (
         <section>
@@ -66,12 +83,21 @@ export default function BodyScreen() {
             )}
 
             <h3>History</h3>
+            <button type="button" onClick={() => setIsAddOpen(true)}>
+                Add
+            </button>
             {measurementsStatus === "loading" && <p>Loading measurements...</p>}
             {measurementsStatus === "error" && (
                 <p>Error: {measurementsErrorMsg}</p>
             )}
             {measurementsStatus === "ready" && (
                 <MeasurementList measurements={measurements} />
+            )}
+
+            {isAddOpen && (
+                <Modal title="Add Measurement" onCancel={() => setIsAddOpen(false)}>
+                    <MeasurementForm onSaved={handleSaved} />
+                </Modal>
             )}
         </section>
     );
