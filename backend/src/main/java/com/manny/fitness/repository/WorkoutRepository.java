@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
 
-    List<Workout> findAllByOrderByWorkoutDateDesc();
+    List<Workout> findAllByOrderByWorkoutDateDescIdDesc();
 }

@@ -25,10 +25,10 @@ public class MeasurementService {
     }
 
     public List<BodyMeasurement> getAllMeasurements() {
-        return repository.findAllByOrderByMeasurementDateDesc();
+        return repository.findAllByOrderByMeasurementDateDescIdDesc();
     }
 
     public Optional<BodyMeasurement> getLatestMeasurement() {
-        return repository.findFirstByOrderByMeasurementDateDesc();
+        return repository.findFirstByOrderByMeasurementDateDescIdDesc();
     }
 }

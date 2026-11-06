@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface BodyMeasurementRepository extends JpaRepository<BodyMeasurement, Long> {
 
-    List<BodyMeasurement> findAllByOrderByMeasurementDateDesc();
+    List<BodyMeasurement> findAllByOrderByMeasurementDateDescIdDesc();
 
-    Optional<BodyMeasurement> findFirstByOrderByMeasurementDateDesc();
+    Optional<BodyMeasurement> findFirstByOrderByMeasurementDateDescIdDesc();
 }
