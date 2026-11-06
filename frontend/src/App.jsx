@@ -8,6 +8,7 @@ import WorkoutsScreen from "./screens/WorkoutsScreen.jsx";
 import ProfileScreen from "./screens/ProfileScreen.jsx";
 import WelcomeScreen from "./screens/WelcomeScreen.jsx";
 import BottomNav from "./components/BottomNav.jsx";
+import ThemeToggle from "./components/ThemeToggle.jsx";
 
 const SCREENS = {
   home: HomeScreen,
@@ -44,49 +45,33 @@ export default function App() {
     setActiveTab("home");
   }
 
+  let content;
+  let showNav = false;
+
   if (profileStatus === "loading") {
-    return (
-        <main>
-          <h1>Fitness Tracker</h1>
-          <p>Loading...</p>
-        </main>
-    );
+    content = <p>Loading...</p>;
+  } else if (profileStatus === "error") {
+    content = <p className="error-banner">{profileErrorMsg}</p>;
+  } else if (profileStatus === "missing" && !isOnboarding) {
+    content = <WelcomeScreen onGetStarted={() => setIsOnboarding(true)} />;
+  } else if (profileStatus === "missing" && isOnboarding) {
+    content = <ProfileScreen onSaved={handleProfileSaved} />;
+  } else {
+    const ActiveScreen = SCREENS[activeTab];
+    content = <ActiveScreen />;
+    showNav = true;
   }
-
-  if (profileStatus === "error") {
-    return (
-        <main>
-          <h1>Fitness Tracker</h1>
-          <p className="error-banner">{profileErrorMsg}</p>
-        </main>
-    );
-  }
-
-  if (profileStatus === "missing" && !isOnboarding) {
-    return (
-        <main>
-          <h1>Fitness Tracker</h1>
-          <WelcomeScreen onGetStarted={() => setIsOnboarding(true)} />
-        </main>
-    );
-  }
-
-  if (profileStatus === "missing" && isOnboarding) {
-    return (
-        <main>
-          <h1>Fitness Tracker</h1>
-          <ProfileScreen onSaved={handleProfileSaved} />
-        </main>
-    );
-  }
-
-  const ActiveScreen = SCREENS[activeTab];
 
   return (
       <main>
-        <h1>Fitness Tracker</h1>
-        <ActiveScreen />
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        <header>
+          <h1>Fitness Tracker</h1>
+          <ThemeToggle />
+        </header>
+        {content}
+        {showNav && (
+            <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        )}
       </main>
   );
 }
