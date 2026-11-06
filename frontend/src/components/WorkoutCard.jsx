@@ -74,7 +74,7 @@ export default function WorkoutCard({ workout, onDeleted }) {
                     <button type="button" onClick={handleDelete}>
                         Delete
                     </button>
-                    {deleteErrorMsg && <p>Error: {deleteErrorMsg}</p>}
+                    {deleteErrorMsg && <p className="error-banner">{deleteErrorMsg}</p>}
                 </div>
             )}
         </li>

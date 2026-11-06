@@ -83,7 +83,7 @@ export default function BodyScreen() {
             {metricsStatus === "empty" && (
                 <p>Add a measurement to see your stats.</p>
             )}
-            {metricsStatus === "error" && <p>Error: {metricsErrorMsg}</p>}
+            {metricsStatus === "error" && <p className="error-banner">{metricsErrorMsg}</p>}
             {metricsStatus === "ready" && (
                 <MetricsCard
                     bodyFatPercentage={metrics.bodyFatPercentage}
@@ -92,20 +92,23 @@ export default function BodyScreen() {
             )}
 
             <h3>History</h3>
-            <button type="button" onClick={() => setIsAddOpen(true)}>
+            <button type="button" className="btn-primary" onClick={() => setIsAddOpen(true)}>
                 Add
             </button>
             {measurementsStatus === "loading" && <p>Loading measurements...</p>}
             {measurementsStatus === "error" && (
-                <p>Error: {measurementsErrorMsg}</p>
+                <p className="error-banner">{measurementsErrorMsg}</p>
             )}
             {measurementsStatus === "ready" && (
                 <MeasurementList measurements={measurements} />
             )}
 
             {isAddOpen && (
-                <Modal title="Add Measurement" onCancel={() => setIsAddOpen(false)}>
-                    <MeasurementForm onSaved={handleSaved} />
+                <Modal title="Add Measurement">
+                    <MeasurementForm
+                        onSaved={handleSaved}
+                        onCancel={() => setIsAddOpen(false)}
+                    />
                 </Modal>
             )}
         </section>

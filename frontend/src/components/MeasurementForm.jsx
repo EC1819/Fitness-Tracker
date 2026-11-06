@@ -39,7 +39,7 @@ function validate({ measurementDate, bodyWeightLbs, neckIn, waistIn, hipIn }) {
     return errors;
 }
 
-export default function MeasurementForm({ onSaved }) {
+export default function MeasurementForm({ onSaved, onCancel }) {
     const [measurementDate, setMeasurementDate] = useState(today());
     const [bodyWeightLbs, setBodyWeightLbs] = useState("");
     const [neckIn, setNeckIn] = useState("");
@@ -152,7 +152,14 @@ export default function MeasurementForm({ onSaved }) {
                 />
             </label>
             <p className="form-note">* Required</p>
-            <button type="submit">Save</button>
+            <div className="form-actions">
+                <button type="button" onClick={onCancel}>
+                    Cancel
+                </button>
+                <button type="submit" className="btn-primary">
+                    Save
+                </button>
+            </div>
             <ErrorMessage messages={formErrors} />
         </form>
     );

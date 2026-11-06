@@ -46,19 +46,22 @@ export default function WorkoutsScreen() {
         <section>
             <h2>Workouts</h2>
 
-            <button type="button" onClick={() => setIsAddOpen(true)}>
+            <button type="button" className="btn-primary" onClick={() => setIsAddOpen(true)}>
                 Add
             </button>
 
             {status === "loading" && <p>Loading workouts...</p>}
-            {status === "error" && <p>Error: {errorMsg}</p>}
+            {status === "error" && <p className="error-banner">{errorMsg}</p>}
             {status === "ready" && (
                 <WorkoutList workouts={workouts} onDeleted={loadWorkouts} />
             )}
 
             {isAddOpen && (
-                <Modal title="Add Workout" onCancel={() => setIsAddOpen(false)}>
-                    <WorkoutForm onSaved={handleSaved} />
+                <Modal title="Add Workout">
+                    <WorkoutForm
+                        onSaved={handleSaved}
+                        onCancel={() => setIsAddOpen(false)}
+                    />
                 </Modal>
             )}
         </section>

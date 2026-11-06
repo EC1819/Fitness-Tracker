@@ -78,7 +78,7 @@ function validateRows(rows) {
     return messages;
 }
 
-export default function WorkoutForm({ onSaved }) {
+export default function WorkoutForm({ onSaved, onCancel }) {
     const [workoutDate, setWorkoutDate] = useState(today());
     const [notes, setNotes] = useState("");
     const [rows, setRows] = useState([newRow()]);
@@ -177,7 +177,14 @@ export default function WorkoutForm({ onSaved }) {
                 Add exercise
             </button>
             <p className="form-note">* Required</p>
-            <button type="submit">Save</button>
+            <div className="form-actions">
+                <button type="button" onClick={onCancel}>
+                    Cancel
+                </button>
+                <button type="submit" className="btn-primary">
+                    Save
+                </button>
+            </div>
 
             <ErrorMessage messages={formErrors} />
         </form>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./App.css";
 import { API_URL } from "./api";
 import { describeFetchError } from "./errorMessages";
 import HomeScreen from "./screens/HomeScreen.jsx";
@@ -56,7 +57,7 @@ export default function App() {
     return (
         <main>
           <h1>Fitness Tracker</h1>
-          <p>Error: {profileErrorMsg}</p>
+          <p className="error-banner">{profileErrorMsg}</p>
         </main>
     );
   }

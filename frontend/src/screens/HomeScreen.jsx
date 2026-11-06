@@ -121,7 +121,7 @@ export default function HomeScreen() {
                     <p>Add a measurement to see your latest weight.</p>
                 )}
                 {measurementsStatus === "error" && (
-                    <p>Error: {measurementsErrorMsg}</p>
+                    <p className="error-banner">{measurementsErrorMsg}</p>
                 )}
                 {measurementsStatus === "ready" && latestMeasurement && (
                     <p>
@@ -135,7 +135,7 @@ export default function HomeScreen() {
             {metricsStatus === "empty" && (
                 <p>Add a measurement to see your stats.</p>
             )}
-            {metricsStatus === "error" && <p>Error: {metricsErrorMsg}</p>}
+            {metricsStatus === "error" && <p className="error-banner">{metricsErrorMsg}</p>}
             {metricsStatus === "ready" && (
                 <MetricsCard
                     bodyFatPercentage={metrics.bodyFatPercentage}
@@ -144,7 +144,7 @@ export default function HomeScreen() {
             )}
 
             {workoutsStatus === "loading" && <p>Loading workouts...</p>}
-            {workoutsStatus === "error" && <p>Error: {workoutsErrorMsg}</p>}
+            {workoutsStatus === "error" && <p className="error-banner">{workoutsErrorMsg}</p>}
             {workoutsStatus === "ready" && (
                 <WeekWorkoutsCard workouts={thisWeeksWorkouts} />
             )}
