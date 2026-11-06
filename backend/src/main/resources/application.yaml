@@ -2,10 +2,14 @@ spring:
   application:
     name: fitness
   datasource:
-    url: jdbc:postgresql://localhost:5432/fitness
-    username: fitness_app
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fitness}
+    username: ${DB_USERNAME:fitness_app}
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: true
+    open-in-view: false
+
+server:
+  port: ${PORT:8080}
