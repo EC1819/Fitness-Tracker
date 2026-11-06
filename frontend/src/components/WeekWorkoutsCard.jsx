@@ -1,3 +1,15 @@
+import { formatFriendlyDate } from "../dateUtils";
+
+function uniqueExerciseNames(sets) {
+    const names = [];
+    for (const set of sets) {
+        if (!names.includes(set.exerciseName)) {
+            names.push(set.exerciseName);
+        }
+    }
+    return names;
+}
+
 export default function WeekWorkoutsCard({ workouts }) {
     if (workouts.length === 0) {
         return (
@@ -18,7 +30,8 @@ export default function WeekWorkoutsCard({ workouts }) {
             <ul>
                 {sorted.map((workout) => (
                     <li key={workout.id}>
-                        {workout.workoutDate} — {workout.sets.length} sets
+                        {formatFriendlyDate(workout.workoutDate, { includeYear: false })} —{" "}
+                        {uniqueExerciseNames(workout.sets).join(", ")}
                     </li>
                 ))}
             </ul>

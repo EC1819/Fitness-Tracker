@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../api";
+import { describeFetchError } from "../errorMessages";
 import MetricsCard from "../components/MetricsCard.jsx";
 import MeasurementList from "../components/MeasurementList.jsx";
 import Modal from "../components/Modal.jsx";
@@ -16,9 +17,8 @@ export default function BodyScreen() {
 
     const [isAddOpen, setIsAddOpen] = useState(false);
 
-    function loadMeasurements() {
-        setMeasurementsStatus("loading");
-        fetch(`${API_URL}/api/measurements`)
+    function fetchMeasurements() {
+        return fetch(`${API_URL}/api/measurements`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 return res.json();
@@ -28,14 +28,18 @@ export default function BodyScreen() {
                 setMeasurementsStatus("ready");
             })
             .catch((err) => {
-                setMeasurementsErrorMsg(err.message);
+                setMeasurementsErrorMsg(describeFetchError(err));
                 setMeasurementsStatus("error");
             });
     }
 
-    function loadMetrics() {
-        setMetricsStatus("loading");
-        fetch(`${API_URL}/api/metrics`)
+    function loadMeasurements() {
+        setMeasurementsStatus("loading");
+        fetchMeasurements();
+    }
+
+    function fetchMetrics() {
+        return fetch(`${API_URL}/api/metrics`)
             .then((res) => {
                 if (res.status === 404) return null;
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -50,14 +54,19 @@ export default function BodyScreen() {
                 }
             })
             .catch((err) => {
-                setMetricsErrorMsg(err.message);
+                setMetricsErrorMsg(describeFetchError(err));
                 setMetricsStatus("error");
             });
     }
 
+    function loadMetrics() {
+        setMetricsStatus("loading");
+        fetchMetrics();
+    }
+
     useEffect(() => {
-        loadMeasurements();
-        loadMetrics();
+        fetchMeasurements();
+        fetchMetrics();
     }, []);
 
     function handleSaved() {

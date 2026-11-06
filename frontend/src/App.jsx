@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "./api";
+import { describeFetchError } from "./errorMessages";
 import HomeScreen from "./screens/HomeScreen.jsx";
 import BodyScreen from "./screens/BodyScreen.jsx";
 import WorkoutsScreen from "./screens/WorkoutsScreen.jsx";
@@ -31,7 +32,7 @@ export default function App() {
           setProfileStatus(profile ? "exists" : "missing");
         })
         .catch((err) => {
-          setProfileErrorMsg(err.message);
+          setProfileErrorMsg(describeFetchError(err));
           setProfileStatus("error");
         });
   }, []);

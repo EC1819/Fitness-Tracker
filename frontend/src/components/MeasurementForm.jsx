@@ -1,8 +1,42 @@
 import { useState } from "react";
 import { API_URL } from "../api";
+import { formatFieldErrors, describeFetchError } from "../errorMessages";
+import { requiredError, positiveError } from "../formValidation";
+import ErrorMessage from "./ErrorMessage.jsx";
+
+const LABELS = {
+    measurementDate: "Date",
+    bodyWeightLbs: "Weight",
+    neckIn: "Neck",
+    waistIn: "Waist",
+    hipIn: "Hip",
+};
 
 function today() {
     return new Date().toISOString().slice(0, 10);
+}
+
+function validate({ measurementDate, bodyWeightLbs, neckIn, waistIn, hipIn }) {
+    const errors = {};
+
+    const dateError = requiredError(measurementDate);
+    if (dateError) errors.measurementDate = dateError;
+
+    const weightError = requiredError(bodyWeightLbs) ?? positiveError(bodyWeightLbs);
+    if (weightError) errors.bodyWeightLbs = weightError;
+
+    const neckError = requiredError(neckIn) ?? positiveError(neckIn);
+    if (neckError) errors.neckIn = neckError;
+
+    const waistError = requiredError(waistIn) ?? positiveError(waistIn);
+    if (waistError) errors.waistIn = waistError;
+
+    if (hipIn !== "") {
+        const hipError = positiveError(hipIn);
+        if (hipError) errors.hipIn = hipError;
+    }
+
+    return errors;
 }
 
 export default function MeasurementForm({ onSaved }) {
@@ -11,11 +45,24 @@ export default function MeasurementForm({ onSaved }) {
     const [neckIn, setNeckIn] = useState("");
     const [waistIn, setWaistIn] = useState("");
     const [hipIn, setHipIn] = useState("");
-    const [fieldErrors, setFieldErrors] = useState(null);
+    const [formErrors, setFormErrors] = useState([]);
 
     function handleSubmit(event) {
         event.preventDefault();
-        setFieldErrors(null);
+
+        const clientErrors = validate({
+            measurementDate,
+            bodyWeightLbs,
+            neckIn,
+            waistIn,
+            hipIn,
+        });
+        if (Object.keys(clientErrors).length > 0) {
+            setFormErrors(formatFieldErrors(clientErrors, LABELS));
+            return;
+        }
+
+        setFormErrors([]);
 
         fetch(`${API_URL}/api/measurements`, {
             method: "POST",
@@ -34,69 +81,79 @@ export default function MeasurementForm({ onSaved }) {
                     return;
                 }
                 if (res.status === 400) {
-                    return res.json().then((errors) => setFieldErrors(errors));
+                    return res
+                        .json()
+                        .then((errors) => setFormErrors(formatFieldErrors(errors, LABELS)));
                 }
-                setFieldErrors({ error: `Server error: ${res.status}` });
+                setFormErrors([`Server error: ${res.status}`]);
             })
-            .catch((err) => setFieldErrors({ error: err.message }));
+            .catch((err) => setFormErrors([describeFetchError(err)]));
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
             <label>
-                Date
+                Date *
                 <input
                     type="date"
                     value={measurementDate}
-                    onChange={(e) => setMeasurementDate(e.target.value)}
+                    onChange={(e) => {
+                        setMeasurementDate(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
             <label>
-                Weight (lbs)
+                Weight (lbs) *
                 <input
                     type="number"
                     step="0.1"
                     value={bodyWeightLbs}
-                    onChange={(e) => setBodyWeightLbs(e.target.value)}
+                    onChange={(e) => {
+                        setBodyWeightLbs(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
             <label>
-                Neck (in)
+                Neck (in) *
                 <input
                     type="number"
                     step="0.1"
                     value={neckIn}
-                    onChange={(e) => setNeckIn(e.target.value)}
+                    onChange={(e) => {
+                        setNeckIn(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
             <label>
-                Waist (in)
+                Waist (in) *
                 <input
                     type="number"
                     step="0.1"
                     value={waistIn}
-                    onChange={(e) => setWaistIn(e.target.value)}
+                    onChange={(e) => {
+                        setWaistIn(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
             <label>
-                Hip (in, optional)
+                Hip (in)
                 <input
                     type="number"
                     step="0.1"
                     value={hipIn}
-                    onChange={(e) => setHipIn(e.target.value)}
+                    onChange={(e) => {
+                        setHipIn(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
+            <p className="form-note">* Required</p>
             <button type="submit">Save</button>
-            {fieldErrors && (
-                <ul className="form-errors">
-                    {Object.entries(fieldErrors).map(([field, message]) => (
-                        <li key={field}>
-                            {field}: {message}
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <ErrorMessage messages={formErrors} />
         </form>
     );
 }

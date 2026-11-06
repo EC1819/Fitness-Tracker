@@ -2,7 +2,7 @@ export default function ExerciseRow({ row, onChange, onRemove }) {
     return (
         <fieldset className="exercise-row">
             <label>
-                Exercise
+                Exercise *
                 <input
                     type="text"
                     value={row.exerciseName}
@@ -10,7 +10,7 @@ export default function ExerciseRow({ row, onChange, onRemove }) {
                 />
             </label>
             <label>
-                Sets
+                Sets *
                 <input
                     type="number"
                     min="1"
@@ -19,7 +19,7 @@ export default function ExerciseRow({ row, onChange, onRemove }) {
                 />
             </label>
             <label>
-                Reps
+                Reps *
                 <input
                     type="number"
                     min="1"
@@ -28,7 +28,7 @@ export default function ExerciseRow({ row, onChange, onRemove }) {
                 />
             </label>
             <label>
-                Weight (lbs)
+                Weight (lbs) *
                 <input
                     type="number"
                     step="0.1"

@@ -1,6 +1,21 @@
 import { useState } from "react";
 import { API_URL } from "../api";
+import { formatFieldErrors, describeFetchError } from "../errorMessages";
+import { requiredError, positiveError } from "../formValidation";
+import ErrorMessage from "./ErrorMessage.jsx";
 import ExerciseRow from "./ExerciseRow.jsx";
+
+const LABELS = {
+    workoutDate: "Date",
+    sets: { _self: "Exercises" },
+};
+
+const ROW_LABELS = {
+    exerciseName: "Exercise name",
+    setsCount: "Number of sets",
+    reps: "Reps",
+    weightLbs: "Weight",
+};
 
 function today() {
     return new Date().toISOString().slice(0, 10);
@@ -32,16 +47,48 @@ function rowsToSets(rows) {
     return sets;
 }
 
+function validateTopLevel(workoutDate, rows) {
+    const errors = {};
+    const dateError = requiredError(workoutDate);
+    if (dateError) errors.workoutDate = dateError;
+    if (rows.length === 0) errors.sets = "must not be empty";
+    return errors;
+}
+
+function validateRows(rows) {
+    const messages = [];
+
+    rows.forEach((row, index) => {
+        const prefix = `Exercise ${index + 1}:`;
+
+        const nameError = requiredError(row.exerciseName.trim());
+        if (nameError) messages.push(`${prefix} ${ROW_LABELS.exerciseName} ${nameError}.`);
+
+        const setsError = requiredError(row.setsCount) ?? positiveError(row.setsCount);
+        if (setsError) messages.push(`${prefix} ${ROW_LABELS.setsCount} ${setsError}.`);
+
+        const repsError = requiredError(row.reps) ?? positiveError(row.reps);
+        if (repsError) messages.push(`${prefix} ${ROW_LABELS.reps} ${repsError}.`);
+
+        const weightError =
+            requiredError(row.weightLbs) ?? positiveError(row.weightLbs, { allowZero: true });
+        if (weightError) messages.push(`${prefix} ${ROW_LABELS.weightLbs} ${weightError}.`);
+    });
+
+    return messages;
+}
+
 export default function WorkoutForm({ onSaved }) {
     const [workoutDate, setWorkoutDate] = useState(today());
     const [notes, setNotes] = useState("");
     const [rows, setRows] = useState([newRow()]);
-    const [fieldErrors, setFieldErrors] = useState(null);
+    const [formErrors, setFormErrors] = useState([]);
 
     function updateRow(id, field, value) {
         setRows((prev) =>
             prev.map((row) => (row.id === id ? { ...row, [field]: value } : row))
         );
+        setFormErrors([]);
     }
 
     function addRow() {
@@ -54,7 +101,19 @@ export default function WorkoutForm({ onSaved }) {
 
     function handleSubmit(event) {
         event.preventDefault();
-        setFieldErrors(null);
+
+        const topLevelErrors = formatFieldErrors(
+            validateTopLevel(workoutDate, rows),
+            LABELS
+        );
+        const rowErrors = rows.length === 0 ? [] : validateRows(rows);
+        const clientErrors = [...topLevelErrors, ...rowErrors];
+        if (clientErrors.length > 0) {
+            setFormErrors(clientErrors);
+            return;
+        }
+
+        setFormErrors([]);
 
         fetch(`${API_URL}/api/workouts`, {
             method: "POST",
@@ -71,29 +130,37 @@ export default function WorkoutForm({ onSaved }) {
                     return;
                 }
                 if (res.status === 400) {
-                    return res.json().then((errors) => setFieldErrors(errors));
+                    return res
+                        .json()
+                        .then((errors) => setFormErrors(formatFieldErrors(errors, LABELS)));
                 }
-                setFieldErrors({ error: `Server error: ${res.status}` });
+                setFormErrors([`Server error: ${res.status}`]);
             })
-            .catch((err) => setFieldErrors({ error: err.message }));
+            .catch((err) => setFormErrors([describeFetchError(err)]));
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
             <label>
-                Date
+                Date *
                 <input
                     type="date"
                     value={workoutDate}
-                    onChange={(e) => setWorkoutDate(e.target.value)}
+                    onChange={(e) => {
+                        setWorkoutDate(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
             <label>
-                Notes (optional)
+                Notes
                 <input
                     type="text"
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    onChange={(e) => {
+                        setNotes(e.target.value);
+                        setFormErrors([]);
+                    }}
                 />
             </label>
 
@@ -109,17 +176,10 @@ export default function WorkoutForm({ onSaved }) {
             <button type="button" onClick={addRow}>
                 Add exercise
             </button>
+            <p className="form-note">* Required</p>
             <button type="submit">Save</button>
 
-            {fieldErrors && (
-                <ul className="form-errors">
-                    {Object.entries(fieldErrors).map(([field, message]) => (
-                        <li key={field}>
-                            {field}: {message}
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <ErrorMessage messages={formErrors} />
         </form>
     );
 }

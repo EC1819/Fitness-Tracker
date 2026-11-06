@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { API_URL } from "../api";
+import { formatFriendlyDate } from "../dateUtils";
+import { describeFetchError } from "../errorMessages";
 
 function groupSetsByExercise(sets) {
     const groups = [];
@@ -18,6 +20,10 @@ function groupSetsByExercise(sets) {
     return groups;
 }
 
+function describeWeight(weightLbs) {
+    return weightLbs === 0 ? "bodyweight" : `${weightLbs} lbs`;
+}
+
 function describeGroup(group) {
     const sorted = [...group.sets].sort((a, b) => a.setNumber - b.setNumber);
     const first = sorted[0];
@@ -26,11 +32,11 @@ function describeGroup(group) {
     );
 
     if (allSame) {
-        return `${group.exerciseName}: ${sorted.length} × ${first.reps} @ ${first.weightLbs} lbs`;
+        return `${group.exerciseName}: ${sorted.length} × ${first.reps} @ ${describeWeight(first.weightLbs)}`;
     }
 
     const details = sorted
-        .map((s) => `Set ${s.setNumber}: ${s.reps} @ ${s.weightLbs} lbs`)
+        .map((s) => `Set ${s.setNumber}: ${s.reps} @ ${describeWeight(s.weightLbs)}`)
         .join(", ");
     return `${group.exerciseName} — ${details}`;
 }
@@ -51,12 +57,12 @@ export default function WorkoutCard({ workout, onDeleted }) {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 onDeleted();
             })
-            .catch((err) => setDeleteErrorMsg(err.message));
+            .catch((err) => setDeleteErrorMsg(describeFetchError(err)));
     }
 
     return (
         <li className="workout-card" onClick={() => setIsExpanded((prev) => !prev)}>
-            <p className="workout-date">{workout.workoutDate}</p>
+            <p className="workout-date">{formatFriendlyDate(workout.workoutDate)}</p>
             <ul>
                 {groups.map((group) => (
                     <li key={group.exerciseName}>{describeGroup(group)}</li>

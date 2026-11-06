@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../api";
+import { describeFetchError } from "../errorMessages";
 import WorkoutList from "../components/WorkoutList.jsx";
 import Modal from "../components/Modal.jsx";
 import WorkoutForm from "../components/WorkoutForm.jsx";
@@ -11,9 +12,8 @@ export default function WorkoutsScreen() {
 
     const [isAddOpen, setIsAddOpen] = useState(false);
 
-    function loadWorkouts() {
-        setStatus("loading");
-        fetch(`${API_URL}/api/workouts`)
+    function fetchWorkouts() {
+        return fetch(`${API_URL}/api/workouts`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 return res.json();
@@ -23,13 +23,18 @@ export default function WorkoutsScreen() {
                 setStatus("ready");
             })
             .catch((err) => {
-                setErrorMsg(err.message);
+                setErrorMsg(describeFetchError(err));
                 setStatus("error");
             });
     }
 
+    function loadWorkouts() {
+        setStatus("loading");
+        fetchWorkouts();
+    }
+
     useEffect(() => {
-        loadWorkouts();
+        fetchWorkouts();
     }, []);
 
     function handleSaved() {

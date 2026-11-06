@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../api";
+import { formatFriendlyDate } from "../dateUtils";
+import { describeFetchError } from "../errorMessages";
 import MetricsCard from "../components/MetricsCard.jsx";
 import WeekWorkoutsCard from "../components/WeekWorkoutsCard.jsx";
 
@@ -37,9 +39,8 @@ export default function HomeScreen() {
     const [workoutsStatus, setWorkoutsStatus] = useState("loading");
     const [workoutsErrorMsg, setWorkoutsErrorMsg] = useState("");
 
-    function loadMeasurements() {
-        setMeasurementsStatus("loading");
-        fetch(`${API_URL}/api/measurements`)
+    function fetchMeasurements() {
+        return fetch(`${API_URL}/api/measurements`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 return res.json();
@@ -49,14 +50,13 @@ export default function HomeScreen() {
                 setMeasurementsStatus(data.length === 0 ? "empty" : "ready");
             })
             .catch((err) => {
-                setMeasurementsErrorMsg(err.message);
+                setMeasurementsErrorMsg(describeFetchError(err));
                 setMeasurementsStatus("error");
             });
     }
 
-    function loadMetrics() {
-        setMetricsStatus("loading");
-        fetch(`${API_URL}/api/metrics`)
+    function fetchMetrics() {
+        return fetch(`${API_URL}/api/metrics`)
             .then((res) => {
                 if (res.status === 404) return null;
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -71,14 +71,13 @@ export default function HomeScreen() {
                 }
             })
             .catch((err) => {
-                setMetricsErrorMsg(err.message);
+                setMetricsErrorMsg(describeFetchError(err));
                 setMetricsStatus("error");
             });
     }
 
-    function loadWorkouts() {
-        setWorkoutsStatus("loading");
-        fetch(`${API_URL}/api/workouts`)
+    function fetchWorkouts() {
+        return fetch(`${API_URL}/api/workouts`)
             .then((res) => {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 return res.json();
@@ -88,15 +87,15 @@ export default function HomeScreen() {
                 setWorkoutsStatus("ready");
             })
             .catch((err) => {
-                setWorkoutsErrorMsg(err.message);
+                setWorkoutsErrorMsg(describeFetchError(err));
                 setWorkoutsStatus("error");
             });
     }
 
     useEffect(() => {
-        loadMeasurements();
-        loadMetrics();
-        loadWorkouts();
+        fetchMeasurements();
+        fetchMetrics();
+        fetchWorkouts();
     }, []);
 
     const latestMeasurement =
@@ -115,20 +114,22 @@ export default function HomeScreen() {
         <section>
             <h2>Home</h2>
 
-            <h3>Latest Weight</h3>
-            {measurementsStatus === "loading" && <p>Loading weight...</p>}
-            {measurementsStatus === "empty" && (
-                <p>Add a measurement to see your latest weight.</p>
-            )}
-            {measurementsStatus === "error" && (
-                <p>Error: {measurementsErrorMsg}</p>
-            )}
-            {measurementsStatus === "ready" && latestMeasurement && (
-                <p>
-                    {latestMeasurement.bodyWeightLbs} lbs on{" "}
-                    {latestMeasurement.measurementDate}
-                </p>
-            )}
+            <div className="card">
+                <h3>Latest Weight</h3>
+                {measurementsStatus === "loading" && <p>Loading weight...</p>}
+                {measurementsStatus === "empty" && (
+                    <p>Add a measurement to see your latest weight.</p>
+                )}
+                {measurementsStatus === "error" && (
+                    <p>Error: {measurementsErrorMsg}</p>
+                )}
+                {measurementsStatus === "ready" && latestMeasurement && (
+                    <p>
+                        {latestMeasurement.bodyWeightLbs} lbs on{" "}
+                        {formatFriendlyDate(latestMeasurement.measurementDate)}
+                    </p>
+                )}
+            </div>
 
             {metricsStatus === "loading" && <p>Loading stats...</p>}
             {metricsStatus === "empty" && (
