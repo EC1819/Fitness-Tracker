@@ -39,7 +39,7 @@ class WorkoutServiceTest {
     void getAllWorkoutsReturnsWhatTheRepositoryReturns() {
         Workout newer = new Workout(LocalDate.of(2026, 11, 3), "Pull day");
         Workout older = new Workout(LocalDate.of(2026, 11, 1), "Leg day");
-        when(repository.findAllByOrderByWorkoutDateDesc()).thenReturn(List.of(newer, older));
+        when(repository.findAllByOrderByWorkoutDateDescIdDesc()).thenReturn(List.of(newer, older));
 
         List<Workout> result = service.getAllWorkouts();
 

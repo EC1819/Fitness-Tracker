@@ -28,7 +28,7 @@ public class WorkoutService {
     }
 
     public List<Workout> getAllWorkouts() {
-        return repository.findAllByOrderByWorkoutDateDesc();
+        return repository.findAllByOrderByWorkoutDateDescIdDesc();
     }
 
     public Optional<Workout> getWorkoutById(Long id) {
