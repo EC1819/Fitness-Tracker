@@ -1,7 +1,7 @@
 import { useEffect, useState} from "react";
 import {API_URL} from "../api";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ onSaved }) {
     const [heightIn, setHeightIn] = useState("");
     const [sex, setSex] = useState("MALE");
     const [message, setMessage] = useState("");
@@ -36,7 +36,10 @@ export default function ProfileScreen() {
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 return res.json();
             })
-            .then(() => setMessage("Profile saved."))
+            .then(() => {
+                setMessage("Profile saved.");
+                if (onSaved) onSaved();
+            })
             .catch((err) => setMessage(err.message));
     }
 
