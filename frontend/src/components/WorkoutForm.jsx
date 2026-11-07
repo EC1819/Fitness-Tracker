@@ -2,6 +2,7 @@ import { useState } from "react";
 import { API_URL } from "../api";
 import { formatFieldErrors, describeFetchError } from "../errorMessages";
 import { requiredError, positiveError } from "../formValidation";
+import { exerciseNameKey } from "../exerciseNames";
 import ErrorMessage from "./ErrorMessage.jsx";
 import ExerciseRow from "./ExerciseRow.jsx";
 
@@ -31,21 +32,22 @@ function newRow() {
     };
 }
 
-function exerciseKey(exerciseName) {
-    return exerciseName.trim().toLowerCase();
-}
-
 function rowsToSets(rows) {
     const sets = [];
     const setCountByExercise = new Map();
+    const nameByExercise = new Map();
     for (const row of rows) {
         const setsCount = Number(row.setsCount);
-        const key = exerciseKey(row.exerciseName);
+        const key = exerciseNameKey(row.exerciseName);
+        if (!nameByExercise.has(key)) {
+            nameByExercise.set(key, row.exerciseName.trim());
+        }
+        const exerciseName = nameByExercise.get(key);
         let setNumber = setCountByExercise.get(key) ?? 0;
         for (let i = 0; i < setsCount; i++) {
             setNumber++;
             sets.push({
-                exerciseName: row.exerciseName,
+                exerciseName,
                 setNumber,
                 reps: Number(row.reps),
                 weightLbs: Number(row.weightLbs),

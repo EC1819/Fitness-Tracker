@@ -2,16 +2,18 @@ import { useState } from "react";
 import { API_URL } from "../api";
 import { formatFriendlyDate } from "../dateUtils";
 import { describeFetchError } from "../errorMessages";
+import { exerciseNameKey } from "../exerciseNames";
 
 function groupSetsByExercise(sets) {
     const groups = [];
-    const groupsByName = new Map();
+    const groupsByKey = new Map();
 
     for (const set of sets) {
-        let group = groupsByName.get(set.exerciseName);
+        const key = exerciseNameKey(set.exerciseName);
+        let group = groupsByKey.get(key);
         if (!group) {
             group = { exerciseName: set.exerciseName, sets: [] };
-            groupsByName.set(set.exerciseName, group);
+            groupsByKey.set(key, group);
             groups.push(group);
         }
         group.sets.push(set);
