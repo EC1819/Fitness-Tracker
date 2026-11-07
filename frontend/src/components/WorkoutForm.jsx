@@ -31,11 +31,19 @@ function newRow() {
     };
 }
 
+function exerciseKey(exerciseName) {
+    return exerciseName.trim().toLowerCase();
+}
+
 function rowsToSets(rows) {
     const sets = [];
+    const setCountByExercise = new Map();
     for (const row of rows) {
         const setsCount = Number(row.setsCount);
-        for (let setNumber = 1; setNumber <= setsCount; setNumber++) {
+        const key = exerciseKey(row.exerciseName);
+        let setNumber = setCountByExercise.get(key) ?? 0;
+        for (let i = 0; i < setsCount; i++) {
+            setNumber++;
             sets.push({
                 exerciseName: row.exerciseName,
                 setNumber,
@@ -43,6 +51,7 @@ function rowsToSets(rows) {
                 weightLbs: Number(row.weightLbs),
             });
         }
+        setCountByExercise.set(key, setNumber);
     }
     return sets;
 }
